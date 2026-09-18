@@ -80,9 +80,9 @@ Overall KPIs:
 
 · average and median delivery days
 
-· count mean standard deviation, minimum and maximum
+· count mean deviation, minimum and maximum
 
-· financial checks, against source tables.
+· financial checks, against source tables## Calculations.
 
 ## Visualizations
 | Chart | File |
@@ -113,18 +113,26 @@ Highlights: 1. Late delivers are on average 2.57 stars vs 4.29 (54.1% vs 9.2%) f
 
 Big seasonal spike in November (Black Friday) 5. 1.03 orders per customer – very low repeat purchase.
 ## How to run
+
 **Google Colab (recommended)**
-1. Open `B142_Olist_Data_Integration.ipynb` in Google Colab.
-2. Either upload the Olist CSV files to `/content`, or do nothing – the notebook downloads them with `kagglehub`.
+
+1. Open `B142_Olist_Data_Integration.ipynb`, in Google Colab.
+
+2. Either upload the Olist CSV files to `/content` or do nothing – the notebook downloads them with `kagglehub`.
+
 3. `Runtime → Run all`.
 
 **Locally** (Java 11/17 required)
-```bash
-pip install -r requirements.txt
-mkdir data          # copy the Olist CSV files here
-jupyter notebook B142_Olist_Data_Integration.ipynb
-```
 
+```bash
+
+pip install -r requirements.txt
+
+mkdir data          # copy the Olist CSV files here
+
+jupyter notebook B142_Olist_Data_Integration.ipynb
+
+```
 ## Repository structure
 ```
 B142-Olist-Data-Integration/
