@@ -38,28 +38,51 @@ customers ─customer_id─> orders ─order_id─> order_items ─product_id─
 | **Load** | write `integrated_data` to Parquet partitioned by `purchase_year` |
 
 ## Cleaning
-- Dates cast to `timestamp`, prices/payments to `double`, review score to `int`.
-- Missing delivery dates **retained** (undelivered orders) and excluded only from delivery metrics.
-- 610 missing product categories **filled** with `unknown`; categories translated to English.
-- 9 invalid payments (value 0 / `not_defined`) **removed**.
-- Review comment columns dropped (not analysed).
 
+- Dates changed to `timestamp` prices/payments changed to `double` review score changed to `int`.
+
+- Missing delivery dates kept ( orders) and not used in delivery metrics.
+
+- 610 Missing product categories added as `unknown`; categories translated into English.
+
+- 9 Invalid payments (value 0 / `not_defined`) taken out.
+
+- Review comment columns removed (not looked at).
+- 
 ## Integration
-- Step-by-step joins with row count, schema and sample after each join.
-- Payments and reviews **aggregated to one row per order before joining** to avoid row multiplication.
-- Validation: 112,650 rows, 98,666 orders, 32,951 products and 3,095 sellers – identical to the source. `SUM(price)` identical to source. A naive join would inflate sales by 4.0%.
+Process
+I performed a step-by-step join of the tables with row counts, a schema and an example for each join. Aggregated the payments and reviews so that they contribute only one row to the joined table. Validated that 112,650 rows and 98,666 orders, 32,951 products and 3,095 sellers have been included – same as in the source tables. The SUM(price) matched that of the source, and a naive join would have inflated sales by 4.0%.
 
 ## Transformations
 `purchase_year`, `purchase_month`, `year_month`, `delivery_days`, `delivered_late`, `item_total = price + freight_value`.
 
 ## Parquet
-Output: `/content/olist_processed/` partitioned by `purchase_year` (3 partitions). Read back with Spark: same row count and preserved data types.
+
+Output: `/content/olist_processed/` split by `purchase_year` into three partitions. When read back with Spark, the row count and data types remain the same.
 
 ## Spark SQL
-Two views: `integrated_data` (item grain) and `orders_level` (order grain). Order counts always use `COUNT(DISTINCT order_id)` or the order-level view.
+
+Two views exist: `integrated_data` at the item level and `orders_level` at the order level. When counting orders always use `COUNT(DISTINCT order_id)`. Refer to the order-level view.
 
 ## Calculations
-Overall KPIs · orders/sales/average price by category · orders/value/delivery by state · orders/value by month · payment type count/value · average review and distribution · average/median delivery days · count, mean, std dev, min, max · financial validation against source tables.
+
+Overall KPIs:
+
+· orders, sales and average price by category
+
+· orders, value and delivery by state
+
+· orders and value by month
+
+· count and value by payment type
+
+· review score and its distribution
+
+· average and median delivery days
+
+· count mean standard deviation, minimum and maximum
+
+· financial checks, against source tables.
 
 ## Visualizations
 | Chart | File |
@@ -84,13 +107,11 @@ Overall KPIs · orders/sales/average price by category · orders/value/delivery 
 | Delivery | average 12.56 days, median 10.22, 8.11% late |
 | Review score | average 4.1 |
 
-**Key insights**
-1. Late deliveries average **2.57** stars vs **4.29** for on-time deliveries (54.1% vs 9.2% scores of 1–2).
-2. SP receives orders in 8.8 days, northern states wait up to 29.4 days.
-3. SP + RJ + MG = 66.5% of orders; the top 5 categories = 39.8% of sales.
-4. Strong seasonal peak in November (Black Friday).
-5. ≈1.03 orders per customer – very low repeat purchasing.
+Highlights: 1. Late delivers are on average 2.57 stars vs 4.29 (54.1% vs 9.2%) for on-time delivers. 2. SP receives orders in 8.8 days vs up to 29.4 days for the northern states. 
 
+3. SP + RJ + MG = 66.5% of orders, the 5 most popular categories = 39.8% of sales 4. 
+
+Big seasonal spike in November (Black Friday) 5. 1.03 orders per customer – very low repeat purchase.
 ## How to run
 **Google Colab (recommended)**
 1. Open `B142_Olist_Data_Integration.ipynb` in Google Colab.
