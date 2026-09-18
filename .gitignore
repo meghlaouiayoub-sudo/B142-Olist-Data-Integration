@@ -1,0 +1,7 @@
+data/
+olist_processed/
+spark-warehouse/
+metastore_db/
+derby.log
+.ipynb_checkpoints/
+__pycache__/
